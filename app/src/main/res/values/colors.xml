@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LIGHT    -->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorAccent">#448AFF</color>
+    <color name="colorBackground">#f8f9fa</color>
+    <color name="colorSurface">#E9ECEF</color>
+    <color name="colorError">#B00020</color>
+    <color name="colorOnPrimary">#f8f9fa</color>
+    <color name="colorOnBackground">#212529</color>
+    <color name="colorOnError">#F44336</color>
+    <color name="colorOnSurface">#212529</color>
+    <color name="colorPrimaryVariant">#212529</color>
+
+
+    <!--    FONTS-->
+    <color name="textColorPrimary">#212529</color>
+    <color name="textColorSecondary">#ADB5BD</color>
+    <color name="textColorHint">#ADB5BD</color>
+    <color name="textColorLink">#448AFF</color>
+
+<!--    DARK -->
+    <color name="colorBackground_DARK">#212529</color>
+    <color name="colorSurface_DARK">#343A40</color>
+    <color name="colorOnBackground_DARK">#f8f9fa</color>
+    <color name="colorOnSurface_DARK">#f8f9fa</color>
+    <color name="colorPrimaryVariant_DARK">#f8f9fa</color>
+
+
+    <!--    FONTS-->
+    <color name="textColorPrimary_DARK">#f8f9fa</color>
+
+
+    <!--    <color name="colorPrimaryDark">#3700B3</color>-->
+<!--    <color name="colorSecondary">#03DAC6</color>-->
+<!--    <color name="colorSecondaryVariant">#018786</color>-->
+<!--    <color name="colorOnSecondary">#000000</color>-->
+
+
+    <!--    <color name="textColorSecondary">#757575</color>-->
+    <!--    <color name="textColorPrimaryInverse">#FFFFFF</color>-->
+<!--    <color name="textColorSecondaryInverse">#BDBDBD</color>-->
+<!--    <color name="textColorTertiary">#B0BEC5</color>-->
+<!--    <color name="textColorTertiaryInverse">#ECEFF1</color>-->
+</resources>

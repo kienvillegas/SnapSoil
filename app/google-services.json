@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "747221898215",
+    "project_id": "snapsoil",
+    "storage_bucket": "snapsoil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747221898215:android:3c4806ead22f539b12e342",
+        "android_client_info": {
+          "package_name": "com.example.snapsoil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6V3J5e-eP8ql68hHIlctZ_W2Si2vxmSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
