@@ -1,162 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorBackground"
+    android:orientation="vertical"
     tools:context=".Home">
 
-    <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/circle"
-        android:backgroundTint="?attr/colorSurface"
-        android:scaleType="center"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bell" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="0dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton2"
-        app:srcCompat="@drawable/card" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins_medium"
-        android:text="Select Method"
-        android:textColor="?attr/textColorPrimary"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView2" />
-
-
-    <Button
-        android:id="@+id/btnCam"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/card"
-        android:backgroundTint="?attr/colorPrimary"
-        android:drawableBottom="@drawable/camera"
-        android:fontFamily="@font/poppins"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:text="Camera"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnUpload"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <Button
-        android:id="@+id/btnUpload"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:background="@drawable/card"
-        android:backgroundTint="?attr/colorPrimary"
-        android:drawableBottom="@drawable/upload"
-        android:fontFamily="@font/poppins"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:text="Upload"
-        android:textAllCaps="false"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnCam"
-        app:layout_constraintTop_toTopOf="@+id/btnCam" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/card"
-        android:backgroundTint="?attr/colorSurface"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2">
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentContainerView3"
-            android:name="com.example.snapsoil.WeeklyChart"
+        android:scrollbars="none"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/custom_tab_layout" />
+            android:layout_height="match_parent">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/colorSurface"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/custom_tab_layout"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/back_tabs"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView3">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/weeklyTab"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/back_select"
-                android:fontFamily="@font/poppins"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Weekly"
-                android:textColor="?attr/colorAccent"
-                android:textSize="16sp" />
+                    <ImageButton
+                        android:id="@+id/imageButton2"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/circle"
+                        android:backgroundTint="?attr/colorSurface"
+                        android:scaleType="center"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/bell" />
 
-            <TextView
-                android:id="@+id/monthlyTab"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:fontFamily="@font/poppins"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Monthly"
-                android:textColor="?attr/textColorPrimary"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Select Method"
+                        android:textColor="?attr/textColorPrimary"
+                        android:textSize="24sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/yearlyTab"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:fontFamily="@font/poppins"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Yearly"
-                android:textColor="?attr/textColorPrimary"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <Button
+                        android:id="@+id/btnCam"
+                        android:layout_width="150dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:drawableBottom="@drawable/camera"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:text="Camera"
+                        android:textAllCaps="false"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btnUpload"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                    <Button
+                        android:id="@+id/btnUpload"
+                        android:layout_width="150dp"
+                        android:layout_height="100dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:drawableBottom="@drawable/upload"
+                        android:fontFamily="@font/poppins"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        android:text="Upload"
+                        android:textAllCaps="false"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/btnCam"
+                        app:layout_constraintTop_toTopOf="@+id/btnCam" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="?attr/colorSurface"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/card"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout5">
+
+                    <LinearLayout
+                        android:id="@+id/custom_tab_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/back_tabs"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/weeklyTab"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/back_select"
+                            android:fontFamily="@font/poppins"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="Weekly"
+                            android:textColor="?attr/colorAccent"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/monthlyTab"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/poppins"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="Monthly"
+                            android:textColor="?attr/textColorPrimary"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/yearlyTab"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/poppins"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="Yearly"
+                            android:textColor="?attr/textColorPrimary"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView67"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Nitrogen (N)"
+                        android:textColor="?attr/textColorPrimary"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="@+id/custom_tab_layout"
+                        app:layout_constraintTop_toBottomOf="@+id/custom_tab_layout" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/nitrogenChart"
+                        android:layout_width="0dp"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorBackground"
+                        app:layout_constraintEnd_toEndOf="@+id/custom_tab_layout"
+                        app:layout_constraintStart_toStartOf="@+id/custom_tab_layout"
+                        app:layout_constraintTop_toBottomOf="@+id/textView67" />
+
+                    <TextView
+                        android:id="@+id/textView62"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Phosphorus (P)"
+                        android:textColor="?attr/textColorPrimary"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView67"
+                        app:layout_constraintTop_toBottomOf="@+id/nitrogenChart" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@id/phosphorusChart"
+                        android:layout_width="0dp"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorBackground"
+                        app:layout_constraintEnd_toEndOf="@+id/nitrogenChart"
+                        app:layout_constraintStart_toStartOf="@+id/nitrogenChart"
+                        app:layout_constraintTop_toBottomOf="@+id/textView62" />
+
+                    <TextView
+                        android:id="@+id/textView63"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Potassium (K)"
+                        android:textColor="?attr/textColorPrimary"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView62"
+                        app:layout_constraintTop_toBottomOf="@+id/phosphorusChart" />
+                    />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/potassiumChart"
+                        android:layout_width="0dp"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorBackground"
+                        app:layout_constraintEnd_toEndOf="@+id/phosphorusChart"
+                        app:layout_constraintStart_toStartOf="@+id/phosphorusChart"
+                        app:layout_constraintTop_toBottomOf="@+id/textView63" />
+
+                    <TextView
+                        android:id="@+id/textView68"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="pH Level"
+                        android:textColor="?attr/textColorPrimary"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="@+id/textView63"
+                        app:layout_constraintTop_toBottomOf="@+id/potassiumChart" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/pHChart"
+                        android:layout_width="0dp"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/card"
+                        android:backgroundTint="?attr/colorBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/potassiumChart"
+                        app:layout_constraintStart_toStartOf="@+id/potassiumChart"
+                        app:layout_constraintTop_toBottomOf="@+id/textView68" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+</LinearLayout>

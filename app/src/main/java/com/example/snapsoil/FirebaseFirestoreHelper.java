@@ -15,8 +15,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,17 +53,16 @@ public class FirebaseFirestoreHelper {
                 });
     }
 
-    public void addHistory(HistoryData history, User user, OnCompleteListener<DocumentReference> listener){
+    public void addHistory(HistoryData history, String id, OnCompleteListener<DocumentReference> listener){
         Map<String, Object> historyData = new HashMap<>();
-        historyData.put("id", history.getId());
         historyData.put("nitrogen", history.getNitrogen());
         historyData.put("phosphorus", history.getPhosphorus());
         historyData.put("potassium", history.getPotassium());
         historyData.put("pH", history.getpH());
-        historyData.put("timeStamp", history.getNitrogen());
+        historyData.put("createdAt", history.getCreatedAt());
 
         DocumentReference historyRef = db.collection("history")
-                .document(user.getUserId());
+                .document(id);
         historyRef.collection("userHistory")
                 .add(historyData)
                 .addOnCompleteListener(listener)
@@ -70,16 +71,30 @@ public class FirebaseFirestoreHelper {
                 });
     }
 
-    public void getHistory(User user, OnCompleteListener<QuerySnapshot> listener){
-        DocumentReference historyRef = db.collection("history").document(user.getUserId());
-        historyRef.collection("userHistory")
-                .orderBy("timeStamp")
-                .get()
-                .addOnCompleteListener(listener)
-                .addOnFailureListener(e -> {
-                    Log.d(TAG, "getHistory: " + e.getMessage());
-                });
+    public void getHistory(String id, boolean direction, OnCompleteListener<QuerySnapshot> listener){
+        if(direction == true){
+            Log.d(TAG, "getHistory: Ascending");
+            DocumentReference historyRef = db.collection("history").document(id);
+            historyRef.collection("userHistory")
+                    .orderBy("createdAt", Query.Direction.ASCENDING)
+                    .get()
+                    .addOnCompleteListener(listener)
+                    .addOnFailureListener(e -> {
+                        Log.d(TAG, "getHistory: " + e.getMessage());
+                    });
+        }else{
+            Log.d(TAG, "getHistory: Descending");
+            DocumentReference historyRef = db.collection("history").document(id);
+            historyRef.collection("userHistory")
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(listener)
+                    .addOnFailureListener(e -> {
+                        Log.d(TAG, "getHistory: " + e.getMessage());
+                    });
+        }
     }
+
     public void updateName(User user, OnCompleteListener<Void> listener){
         db.collection("users").document(user.getUserId())
                 .update(

@@ -89,7 +89,6 @@ public class SignUpPage extends AppCompatActivity {
             email = etEmail.getText().toString().trim();
             password = etPassword.getText().toString().trim();
             confirmPassword = etCPassword.getText().toString().trim();
-            Timestamp createdAt = new Timestamp(new Date());
 
             if(isEmpty(fName)){
                 setErrorMsg(etFname,"Required");
@@ -134,7 +133,7 @@ public class SignUpPage extends AppCompatActivity {
             }else if(!isCPassMatch(password,confirmPassword)){
                 setErrorMsg(etCPassword,"Password does not match");
             } else{
-                user = new User(fName, mName, lName, brgy, city, province, bDate, createdAt);
+                user = new User(fName, mName, lName, brgy, city, province, bDate);
                 createAccount(user, email,confirmPassword);
             }
             hideProggressBar();

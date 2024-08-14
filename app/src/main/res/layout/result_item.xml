@@ -11,40 +11,136 @@
     android:paddingRight="10dp"
     android:paddingBottom="10dp">
 
-    <TextView
-        android:id="@+id/tvResultTItle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_medium"
-        android:gravity="center"
-        android:text="Result"
-        android:textColor="?attr/textColorPrimary"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+      <TextView
+          android:id="@+id/textView59"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="pH Level:"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintStart_toStartOf="@+id/textView58"
+          app:layout_constraintTop_toBottomOf="@+id/textView58" />
 
-    <TextView
-        android:id="@+id/tvSoilNutrients"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins"
-        android:text="Soil Nutrients, N,P,K and pH Level"
-        android:textColor="?attr/textColorPrimary"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvResultTItle" />
+      <TextView
+          android:id="@+id/tvResultTItle"
+          android:layout_width="393dp"
+          android:layout_height="40dp"
+          android:fontFamily="@font/poppins_medium"
+          android:gravity="center"
+          android:text="Result"
+          android:textAlignment="center"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="24sp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/poppins"
-        android:text="Date: MM/DD/YYYY"
-        android:textColor="?attr/textColorPrimary"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSoilNutrients" />
+      <TextView
+          android:id="@+id/tvSoilNutrients"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:fontFamily="@font/poppins"
+          android:text="Nitrogen: "
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/tvResultTItle" />
+
+      <TextView
+          android:id="@+id/tvDate"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="8dp"
+          android:fontFamily="@font/poppins"
+          android:text="Date: MM/DD/YYYY"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="12sp"
+          android:textAlignment="center"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/textView59" />
+
+      <TextView
+          android:id="@+id/textView57"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="Phosphorus: "
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintStart_toStartOf="@+id/tvSoilNutrients"
+          app:layout_constraintTop_toBottomOf="@+id/tvSoilNutrients" />
+
+      <TextView
+          android:id="@+id/textView58"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="Potassium: "
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintStart_toStartOf="@+id/textView57"
+          app:layout_constraintTop_toBottomOf="@+id/textView57" />
+
+      <TextView
+          android:id="@+id/tvResultN"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="24dp"
+          android:text="0.0"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintBottom_toBottomOf="@+id/tvSoilNutrients"
+          app:layout_constraintStart_toEndOf="@+id/tvSoilNutrients"
+          app:layout_constraintTop_toTopOf="@+id/tvSoilNutrients" />
+
+      <TextView
+          android:id="@+id/tvResultP"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="0.0"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintBottom_toBottomOf="@+id/textView57"
+          app:layout_constraintStart_toStartOf="@+id/tvResultN"
+          app:layout_constraintTop_toTopOf="@+id/textView57" />
+
+      <TextView
+          android:id="@+id/tvResultK"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="0.0"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintBottom_toTopOf="@+id/textView59"
+          app:layout_constraintStart_toEndOf="@+id/textView57"
+          app:layout_constraintStart_toStartOf="@+id/tvResultP"
+          app:layout_constraintTop_toBottomOf="@+id/textView57" />
+
+      <TextView
+          android:id="@+id/tvResultpH"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="0.0"
+          android:textColor="?attr/textColorPrimary"
+          android:textSize="16sp"
+          android:textAlignment="center"
+          app:layout_constraintBottom_toBottomOf="@+id/textView59"
+          app:layout_constraintStart_toStartOf="@+id/tvResultK"
+          app:layout_constraintTop_toTopOf="@+id/textView59" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

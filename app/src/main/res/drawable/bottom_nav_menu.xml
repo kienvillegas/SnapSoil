@@ -9,7 +9,6 @@
         android:icon="@drawable/history"/>
 <!--        android:title="History " />-->
     <item
-        android:id="@+id/nav_profile"
-        android:icon="@drawable/profile"/>
-<!--        android:title="Profile" />-->
+        android:id="@+id/nav_info"
+        android:icon="@drawable/info"/>
 </menu>

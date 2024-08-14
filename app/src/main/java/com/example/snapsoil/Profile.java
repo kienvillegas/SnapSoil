@@ -38,8 +38,8 @@ public class Profile extends Fragment {
     ImageButton imBtnSettings, imBtnEditName, imBtnEditAddress, imBtnEditEmail;
     Button btnSignOut;
     Dialog dialog;
-    private Button btnSaveCancel, btnSaveConfirm;
-    private ProgressBar pbSave;
+    private Button btnSaveCancel, btnSaveConfirm, btnSignOutConfirm, btnSignOutCancel;
+    private ProgressBar pbSave, pbSignOut;
     private boolean isEditName, isEditAddress, isEditEmail = true;
     public Profile() {
         // Required empty public constructor
@@ -82,7 +82,10 @@ public class Profile extends Fragment {
         displayEmail();
         disableCurrentInfo(view);
         initializeDialog();
+        initializeSignOutDialog();
+
         btnSaveConfirm = dialog.findViewById(R.id.btnSaveChangesConfirm);
+        btnSignOutConfirm = dialog.findViewById(R.id.btnSignOutConfirm);
 
         imBtnEditName.setOnClickListener(v -> {
             String fName, mName, lName;
@@ -95,7 +98,6 @@ public class Profile extends Fragment {
                 if(!(isEmpty(fName) && isEmpty(mName) && isEmpty(lName))){
                     btnSaveConfirm.setOnClickListener(v1 -> {
                         showSaveProgressBar();
-                        imBtnSettings.setBackgroundResource(R.drawable.edit);
                         hideEditName(view);
                         updateName(fName,mName,lName);
                         hideSaveProgressBar();
@@ -103,7 +105,6 @@ public class Profile extends Fragment {
                     });
                     dialog.show();
                 }else{
-                    imBtnSettings.setBackgroundResource(R.drawable.edit);
                     hideEditName(view);
                 }
             }else{
@@ -183,10 +184,17 @@ public class Profile extends Fragment {
         });
 
         btnSignOut.setOnClickListener(v -> {
-            firebaseAuthHelper.signOut();
-            Intent intent = new Intent(getContext(), SignInPage.class);
-            startActivity(intent);
-            getActivity().finish();
+            dialog.show();
+            btnSignOutConfirm.setOnClickListener(v13 -> {
+                showSignOutProgressBar();
+                firebaseAuthHelper.signOut();
+                hideSignOutProgressBar();
+                dialog.dismiss();
+
+                Intent intent = new Intent(getContext(), SignInPage.class);
+                startActivity(intent);
+                getActivity().finish();
+            });
         });
         return view;
     }
@@ -202,6 +210,18 @@ public class Profile extends Fragment {
         btnSaveConfirm.setVisibility(View.VISIBLE);
         btnSaveCancel.setVisibility(View.VISIBLE);
     }
+
+    private void showSignOutProgressBar(){
+        pbSignOut.setVisibility(View.VISIBLE);
+        btnSignOutConfirm.setVisibility(View.GONE);
+        btnSignOutCancel.setVisibility(View.GONE);
+    }
+
+    private void hideSignOutProgressBar(){
+        pbSignOut.setVisibility(View.GONE);
+        btnSignOutCancel.setVisibility(View.VISIBLE);
+        btnSignOutConfirm.setVisibility(View.VISIBLE);
+    }
     private void initializeDialog(){
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.save_changes_confirmation);
@@ -212,6 +232,18 @@ public class Profile extends Fragment {
         btnSaveCancel = dialog.findViewById(R.id.btnSaveChangesCancel);
         btnSaveCancel.setOnClickListener(v -> dialog.dismiss());
         pbSave = dialog.findViewById(R.id.pbSaveChanges);
+    }
+
+    private void initializeSignOutDialog(){
+        dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.sign_out_confirmation);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.card);
+        dialog.setCancelable(false);
+
+        btnSignOutCancel = dialog.findViewById(R.id.btnSignOutCancel);
+        btnSignOutCancel.setOnClickListener(v -> dialog.dismiss());
+        pbSignOut = dialog.findViewById(R.id.pbSignOut);
     }
     private void setErrorMsg(EditText editText, String msg){
         editText.setError(msg);

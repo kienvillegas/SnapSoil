@@ -37,6 +37,10 @@ public class FirebaseAuthHelper {
                 .addOnCompleteListener(listener)
                 .addOnFailureListener(e -> Log.e(TAG, "signIn: " + e.getMessage()));
     }
+
+    public void signInAnonymously(OnCompleteListener<AuthResult> listener){
+        mAuth.signInAnonymously().addOnCompleteListener(listener);
+    }
     public void passwordReset(String email, OnCompleteListener<Void> listener){
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(listener)
