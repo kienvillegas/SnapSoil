@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card"
+    android:backgroundTint="@color/colorBackground">
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Select Date Range"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="@font/poppins"
+        android:text="Start Date:"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/textView7"
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/text_field"
+        android:ems="10"
+        android:fontFamily="@font/poppins"
+        android:hint="YYYY-MM-DD"
+        android:inputType="date"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:textColorHint="@color/textColorHint"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
+        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:fontFamily="@font/poppins"
+        android:text="End Date:"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/textView8"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <EditText
+        android:id="@+id/editTextDate2"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:background="@drawable/text_field"
+        android:ems="10"
+        android:fontFamily="@font/poppins"
+        android:hint="YYYY-MM-DD"
+        android:inputType="date"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/textColorPrimary"
+        android:textColorHint="@color/textColorHint"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="@+id/editTextDate"
+        app:layout_constraintStart_toStartOf="@+id/editTextDate"
+        app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/button"
+        android:backgroundTint="@color/colorPrimary"
+        android:fontFamily="@font/poppins"
+        android:text="Filter"
+        android:textColor="@color/colorOnSurface_DARK"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/editTextDate2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDate2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

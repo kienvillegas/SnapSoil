@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     android:background="?attr/colorBackground"
     android:backgroundTint="?attr/colorBackground"
+    android:foreground="@drawable/shape_window_dim"
+    android:foregroundTint="#00FFFFFF"
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.Guideline

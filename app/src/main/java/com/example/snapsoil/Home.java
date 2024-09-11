@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,33 +27,55 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InsertGesture;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.renderer.YAxisRenderer;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.xml.transform.Templates;
 
 public class Home extends Fragment {
     private static final String PREFS_NAME = "myPrefs";
@@ -74,14 +97,13 @@ public class Home extends Fragment {
     private Calendar calendar;
     private Dialog dialog;
     private LineChart nitrogenChart, phosphorusChart, potassiumChart, pHChart;
-    private SharedPreferences sharedPreferences;
-    List<Double> nitrogenList;
-    List<Double> phosphorusList;
-    List<Double> potassiumList;
-    List<Double> pHList;
+    List<Nutrients> nutrientsList;
+
+    DataAggregator dataAggregator = new DataAggregator();
+    Map<Integer, Map<String, Double>> nutrientAveragesMap;
+    List<String> xAxisLabels;
 
     public Home() {
-        // Required empty public constructor
     }
 
     @Override
@@ -108,14 +130,9 @@ public class Home extends Fragment {
         auth = new FirebaseAuthHelper();
         db = new FirebaseFirestoreHelper();
         calendar = Calendar.getInstance();
-        String userId = auth.getUserId();
+        nutrientsList = new ArrayList<>();
 
-        nitrogenList = new ArrayList<>();
-        phosphorusList = new ArrayList<>();
-        potassiumList = new ArrayList<>();
-        pHList = new ArrayList<>();
-
-        fetchWeeklyPred(userId);
+        fetchData("weekly");
 
         btnCam.setOnClickListener(v -> {
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -139,8 +156,7 @@ public class Home extends Fragment {
 
             if (isWeeklyTab) {
                 setActiveTab(weeklyTab, monthlyTab, yearlyTab);
-                fetchWeeklyPred(userId);
-//                loadFragment(new WeeklyChart());
+                fetchData("weekly");
             }
         });
 
@@ -151,8 +167,7 @@ public class Home extends Fragment {
 
             if (isMonthlyTab) {
                 setActiveTab(monthlyTab, weeklyTab, yearlyTab);
-//                loadFragment(new MonthlyChart());
-                displayMonthlyData();
+                fetchData("monthly");
             }
         });
 
@@ -163,249 +178,111 @@ public class Home extends Fragment {
 
             if (isYearlyTab) {
                 setActiveTab(yearlyTab, weeklyTab, monthlyTab);
-//                loadFragment(new YearlyChart());
-                displayYearlyData();
+                fetchData("yearly");
             }
         });
 
         return view;
     }
-
-    private void fetchWeeklyPred(String userId) {
+    private  void fetchData(String label){
+        String userId = auth.getUserId();
         db.getHistory(userId, true, task -> {
-            if (task.isSuccessful()) {
-                Log.d(TAG, "fetchWeeklyPred: " + task.getResult());
+            if(task.isSuccessful()){
                 QuerySnapshot querySnapshot = task.getResult();
-                if (querySnapshot != null) {
-                    List<String> xAxisLabels = new ArrayList<>();
 
-                    for (DocumentSnapshot document : querySnapshot) {
-                        Log.d(TAG, "fetchWeeklyPred: " + document);
-                        groupByWeek(document);
-                    }
-
-                    List<Entry> nitrogenEntries = prepareChartData("Nitrogen", weeklyDataMap, xAxisLabels);
-                    List<Entry> phosphorusEntries = prepareChartData("Phosphorus", weeklyDataMap, xAxisLabels);
-                    List<Entry> potassiumEntries = prepareChartData("Potassium", weeklyDataMap, xAxisLabels);
-                    List<Entry> pHEntries = prepareChartData("pH", weeklyDataMap, xAxisLabels);
-
-                    displayChart(nitrogenEntries, nitrogenChart, "Nitrogen", xAxisLabels);
-                    displayChart(phosphorusEntries, phosphorusChart, "Phosphorus", xAxisLabels);
-                    displayChart(potassiumEntries, potassiumChart, "Potassium", xAxisLabels);
-                    displayChart(pHEntries, pHChart, "pH", xAxisLabels);
-                } else {
-                    Log.d(TAG, "fetchWeeklyPred: querysnapshot is null");
+                for(DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()){
+                    storeData(documentSnapshot);
                 }
-            } else {
-                Log.d(TAG, "fetchWeeklyPred: " + task.getException());
+            }else{
+                Log.e(TAG, "fetchData: " + task.getException());
             }
+
+            if(label.equalsIgnoreCase("weekly")) nutrientAveragesMap = dataAggregator.getAverageByWeek(nutrientsList);
+            else if(label.equalsIgnoreCase("monthly")) nutrientAveragesMap = dataAggregator.getAverageByMonth(nutrientsList);
+            else if(label.equalsIgnoreCase("yearly"))nutrientAveragesMap = dataAggregator.getAverageByYear(nutrientsList);
+
+            xAxisLabels = getLabels(label, nutrientAveragesMap);
+            displayChart(nutrientAveragesMap, nitrogenChart, "nitrogen", xAxisLabels);
+            displayChart(nutrientAveragesMap, phosphorusChart, "phosphorus", xAxisLabels);
+            displayChart(nutrientAveragesMap, potassiumChart, "potassium", xAxisLabels);
+            displayChart(nutrientAveragesMap, pHChart, "ph", xAxisLabels);
+
+
         });
     }
+    private void storeData(DocumentSnapshot documentSnapshot){
+        double nitrogen, phosphorus, potassium, pH;
+        String date;
 
-    private void groupByWeek(DocumentSnapshot document) {
-        Log.d(TAG, "Grouping by week");
-        String createdAt = document.getString("createdAt");
-        double nitrogen = document.getDouble("nitrogen");
-        double phosphorus = document.getDouble("phosphorus");
-        double potassium = document.getDouble("potassium");
-        double pH = document.getDouble("pH");
+        nitrogen = documentSnapshot.getDouble("nitrogen");
+        phosphorus = documentSnapshot.getDouble("phosphorus");
+        potassium = documentSnapshot.getDouble("potassium");
+        pH = documentSnapshot.getDouble("pH");
+        date = documentSnapshot.getString("createdAt");
 
-        try {
-            Date timestamp = dateFormat.parse(createdAt);
-            if (timestamp != null) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(timestamp);
-                int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
-                String weekKey = "Week " + weekOfYear;
+        Nutrients nutrients = new Nutrients(nitrogen, phosphorus, potassium, pH, date);
+        nutrientsList.add(nutrients);
+    }
 
-                Nutrients nutrients = weeklyDataMap.getOrDefault(weekKey, new Nutrients());
-                nutrients.addData(nitrogen, phosphorus, potassium, pH);
-                weeklyDataMap.put(weekKey, nutrients);
+    private List<String> getLabels(String label, Map<Integer, Map<String, Double>> averages){
+        String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept",
+                "Oct", "Nov", "Dec"};
+        xAxisLabels = new ArrayList<>();
+
+        for(Integer key : averages.keySet()){
+            if(label.equalsIgnoreCase("weekly")){
+                xAxisLabels.add("Week " + key);
+            }else if(label.equalsIgnoreCase("monthly")){
+                xAxisLabels.add(months[key - 1]);
+            }else if(label.equalsIgnoreCase("yearly")){
+                xAxisLabels.add(key.toString());
             }
-        } catch (ParseException e) {
-            Log.e(TAG, "fetchData: Failed to parse date", e);
         }
+        return xAxisLabels;
     }
 
-    private String getMonthName(int monthIndex) {
-        String[] months = {
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        };
-        return months[monthIndex];
-    }
-    private List<Entry> prepareChartData(String nutrient, Map<String, Nutrients> nutrientData, List<String> xAxisLabels) {
-        List<Entry> entries = new ArrayList<>();
-        List<String> sortedKeys = new ArrayList<>(nutrientData.keySet());
-        Collections.sort(sortedKeys);
+    private void displayChart(Map<Integer, Map<String, Double>> averages, LineChart lineChart, String label, List<String> xAxisLabels) {
+        ArrayList<Entry> entries = new ArrayList<>();
+        int index = 0;
 
-        Set<String> uniqueLabels = new LinkedHashSet<>(sortedKeys);
-
-        for (int i = 0; i < sortedKeys.size(); i++) {
-            String key = sortedKeys.get(i);
-            Log.d(TAG, "Key: " + key);
-            Nutrients nutrients = nutrientData.get(key);
-            float averageValue = 0;
-            switch (nutrient) {
-                case "Nitrogen":
-                    averageValue = (float) nutrients.getAverageNitrogen();
-                    break;
-                case "Phosphorus":
-                    averageValue = (float) nutrients.getAveragePhosphorus();
-                    break;
-                case "Potassium":
-                    averageValue = (float) nutrients.getAveragePotassium();
-                    break;
-                case "pH":
-                    averageValue = (float) nutrients.getAveragepH();
-                    break;
+        for (Integer key : averages.keySet()) {
+            Map<String, Double> nutrient = averages.get(key);
+            if (nutrient != null) {
+                Double averageVal = nutrient.get(label.toLowerCase());
+                if (averageVal != null) {
+                    entries.add(new Entry(index, averageVal.floatValue()));
+                    index++;
+                } else {
+                    Log.d(TAG, "Average Value is null for key: " + key);
+                    entries.add(new Entry(index, 0.0f));
+                    index++;
+                }
+            } else {
+                Log.d(TAG, "Nutrient map for key " + key + " is null");
+                entries.add(new Entry(key, 0.0f));
             }
-            entries.add(new Entry(i, averageValue));
         }
 
-        xAxisLabels.clear();
-        xAxisLabels.addAll(uniqueLabels);
 
-        Log.d(TAG, "Labels after processing: " + xAxisLabels.toString());
-        return entries;
-    }
-
-    private void displayMonthlyData() {
-        List<String> xAxisLabels = new ArrayList<>();
-        xAxisLabels.add("Jan");
-        xAxisLabels.add("Feb");
-        xAxisLabels.add("Mar");
-        xAxisLabels.add("Apr");
-        xAxisLabels.add("May");
-        xAxisLabels.add("June");
-        xAxisLabels.add("July");
-        xAxisLabels.add("Aug");
-        xAxisLabels.add("Sept");
-        xAxisLabels.add("Oct");
-        xAxisLabels.add("Nov");
-        xAxisLabels.add("Dec");
-
-
-        List<Entry> nitrogenEntries = new ArrayList<>();
-        nitrogenEntries.add(new Entry(0, 10));
-        nitrogenEntries.add(new Entry(1, 15));
-        nitrogenEntries.add(new Entry(2, 7));
-        nitrogenEntries.add(new Entry(3, 12));
-        nitrogenEntries.add(new Entry(4, 10));
-        nitrogenEntries.add(new Entry(5, 15));
-        nitrogenEntries.add(new Entry(6, 7));
-        nitrogenEntries.add(new Entry(7, 12));
-        nitrogenEntries.add(new Entry(8, 10));
-        nitrogenEntries.add(new Entry(9, 15));
-        nitrogenEntries.add(new Entry(10, 7));
-        nitrogenEntries.add(new Entry(11, 12));
-
-        List<Entry> phosphorusEntries = new ArrayList<>();
-        phosphorusEntries.add(new Entry(0, 5));
-        phosphorusEntries.add(new Entry(1, 8));
-        phosphorusEntries.add(new Entry(2, 6));
-        phosphorusEntries.add(new Entry(3, 7));
-        phosphorusEntries.add(new Entry(4, 5));
-        phosphorusEntries.add(new Entry(5, 8));
-        phosphorusEntries.add(new Entry(6, 6));
-        phosphorusEntries.add(new Entry(7, 7));
-        phosphorusEntries.add(new Entry(8, 5));
-        phosphorusEntries.add(new Entry(9, 8));
-        phosphorusEntries.add(new Entry(10, 6));
-        phosphorusEntries.add(new Entry(11, 7));
-
-        List<Entry> potassiumEntries = new ArrayList<>();
-        potassiumEntries.add(new Entry(0, 20));
-        potassiumEntries.add(new Entry(1, 25));
-        potassiumEntries.add(new Entry(2, 22));
-        potassiumEntries.add(new Entry(3, 18));
-        potassiumEntries.add(new Entry(4, 20));
-        potassiumEntries.add(new Entry(5, 25));
-        potassiumEntries.add(new Entry(6, 22));
-        potassiumEntries.add(new Entry(7, 18));
-        potassiumEntries.add(new Entry(8, 20));
-        potassiumEntries.add(new Entry(9, 25));
-        potassiumEntries.add(new Entry(10, 22));
-        potassiumEntries.add(new Entry(11, 18));
-
-        List<Entry> pHEntries = new ArrayList<>();
-        pHEntries.add(new Entry(0, 6.5f));
-        pHEntries.add(new Entry(1, 6.8f));
-        pHEntries.add(new Entry(2, 6.7f));
-        pHEntries.add(new Entry(3, 6.9f));
-        pHEntries.add(new Entry(4, 6.5f));
-        pHEntries.add(new Entry(5, 6.8f));
-        pHEntries.add(new Entry(6, 6.7f));
-        pHEntries.add(new Entry(7, 6.9f));
-        pHEntries.add(new Entry(8, 6.5f));
-        pHEntries.add(new Entry(9, 6.8f));
-        pHEntries.add(new Entry(10, 6.7f));
-        pHEntries.add(new Entry(11, 6.9f));
-
-        displayChart(nitrogenEntries, nitrogenChart, "Nitrogen", xAxisLabels);
-        displayChart(phosphorusEntries, phosphorusChart, "Phosphorus", xAxisLabels);
-        displayChart(potassiumEntries, potassiumChart, "Potassium", xAxisLabels);
-        displayChart(pHEntries, pHChart, "pH", xAxisLabels);
-    }
-
-
-    private void displayYearlyData() {
-        List<String> xAxisLabels = new ArrayList<>();
-        xAxisLabels.add("2020");
-        xAxisLabels.add("2021");
-        xAxisLabels.add("2022");
-        xAxisLabels.add("2023");
-        xAxisLabels.add("2024");
-
-        List<Entry> nitrogenEntries = new ArrayList<>();
-        nitrogenEntries.add(new Entry(0, 15));
-        nitrogenEntries.add(new Entry(1, 12));
-        nitrogenEntries.add(new Entry(2, 10));
-        nitrogenEntries.add(new Entry(3, 7));
-        nitrogenEntries.add(new Entry(4, 12));
-
-        List<Entry> phosphorusEntries = new ArrayList<>();
-        phosphorusEntries.add(new Entry(0, 5));
-        phosphorusEntries.add(new Entry(1, 7));
-        phosphorusEntries.add(new Entry(2, 5));
-        phosphorusEntries.add(new Entry(3, 8));
-        phosphorusEntries.add(new Entry(4, 7));
-
-        List<Entry> potassiumEntries = new ArrayList<>();
-        potassiumEntries.add(new Entry(0, 20));
-        potassiumEntries.add(new Entry(1, 22));
-        potassiumEntries.add(new Entry(2, 20));
-        potassiumEntries.add(new Entry(3, 22));
-        potassiumEntries.add(new Entry(4, 18));
-
-        List<Entry> pHEntries = new ArrayList<>();
-        pHEntries.add(new Entry(0, 6.5f));
-        pHEntries.add(new Entry(1, 6.8f));
-        pHEntries.add(new Entry(2, 6.9f));
-        pHEntries.add(new Entry(3, 6.5f));
-        pHEntries.add(new Entry(4, 6.7f));
-
-        displayChart(nitrogenEntries, nitrogenChart, "Nitrogen", xAxisLabels);
-        displayChart(phosphorusEntries, phosphorusChart, "Phosphorus", xAxisLabels);
-        displayChart(potassiumEntries, potassiumChart, "Potassium", xAxisLabels);
-        displayChart(pHEntries, pHChart, "pH", xAxisLabels);
-    }
-
-
-    private void displayChart(List<Entry> entries, LineChart lineChart, String label, List<String> xAxisLabels) {
+//      Setting up the data for the chart
         LineDataSet dataSet = new LineDataSet(entries, label);
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
 
+//      Setting the color of the chart
+        dataSet.setColor(Color.BLUE);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setDrawValues(false);
+
+//      X-Axis
         XAxis xAxis = lineChart.getXAxis();
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawGridLines(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
-        xAxis.setLabelCount(4);
+        xAxis.setLabelCount(xAxisLabels.size(), true);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabels));
-
-        lineChart.setDragEnabled(true);
-        lineChart.setScaleEnabled(true);
-        lineChart.setPinchZoom(true);
 
         if (xAxisLabels.size() > 1) {
             xAxis.setLabelRotationAngle(45f);
@@ -413,41 +290,28 @@ public class Home extends Fragment {
             xAxis.setLabelRotationAngle(0f);
         }
 
+//      Chart Interactions
+        lineChart.setTouchEnabled(true);
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setPinchZoom(true);
+        lineChart.setDoubleTapToZoomEnabled(false);
+
+//      Chart Display
         lineChart.setVisibleXRangeMaximum(4);
         lineChart.moveViewToX(0);
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getDescription().setEnabled(false);
-        lineChart.getLegend().setEnabled(false);
+        lineChart.getLegend().setEnabled(true);
 
+//        Chart Animation
+        lineChart.animateY(1000, Easing.EaseOutBack);
+
+        lineChart.setLogEnabled(true);
+        lineChart.setNoDataText("No Data Yet.");
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
     }
-
-//    private void displayChart(List<Entry> entries, LineChart lineChart, String label, List<String> xAxisLabels) {
-//        LineDataSet dataSet = new LineDataSet(entries, label);
-//        LineData lineData = new LineData(dataSet);
-//        lineChart.setData(lineData);
-//
-//        XAxis xAxis = lineChart.getXAxis();
-//        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-//        xAxis.setGranularity(1f);
-//        xAxis.setLabelCount(xAxisLabels.size(), true);
-//        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabels));
-//
-//        if (xAxisLabels.size() > 1) {
-//            xAxis.setLabelRotationAngle(45f);
-//        } else {
-//            xAxis.setLabelRotationAngle(0f);
-//        }
-//
-//        lineChart.getAxisRight().setEnabled(false);
-//        lineChart.getDescription().setEnabled(false);
-//        lineChart.getLegend().setEnabled(false);
-//
-//        lineChart.notifyDataSetChanged(); // Ensure data is updated
-//        lineChart.invalidate(); // Refresh chart
-//    }
-
     private void dispatchTakePictureIntent() {
         Context context = getContext();
         if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -506,9 +370,14 @@ public class Home extends Fragment {
     }
 
     private void displayDialog(){
+        Window window = getActivity().getWindow();
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.alpha = 0.5f;
+        window.setAttributes(layoutParams);
+
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.soil_detection_dialog);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.card);
         dialog.setCancelable(false);
 
@@ -523,6 +392,9 @@ public class Home extends Fragment {
             }else{
                 openGallery();
             }
+
+            layoutParams.alpha = 1.0f;
+            window.setAttributes(layoutParams);
         });
         dialog.show();
     }

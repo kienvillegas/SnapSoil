@@ -24,7 +24,6 @@ import java.util.Map;
 public class ViewingPage extends AppCompatActivity {
     private static FirebaseAuthHelper firebaseAuthHelper;
     private static FirebaseFirestoreHelper firebaseFirestoreHelper;
-    private final DecimalFormat df = new DecimalFormat("0.00");
 
     ImageView imCapImg;
     Button btnProceed, btnCancel;

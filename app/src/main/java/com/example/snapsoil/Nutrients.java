@@ -2,36 +2,52 @@ package com.example.snapsoil;
 
 import static android.content.ContentValues.TAG;
 
+import android.os.Build;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
+
 public class Nutrients {
-    private double totalNitrogen = 0;
-    private double totalPhosphorus = 0;
-    private double totalPotassium = 0;
-    private double totalpH = 0;
-    private int count = 0;
+    private double nitrogen = 0;
+    private  double phosphorus = 0;
+    private  double potassium = 0;
+    private  double pH = 0;
+    private LocalDateTime createdAt;
 
-    void addData(double nitrogen, double phosphorus, double potassium, double pH){
-        this.totalNitrogen += nitrogen;
-        this.totalPhosphorus += phosphorus;
-        this.totalPotassium += potassium;
-        this.totalpH += pH;
-        this.count++;
+
+    public Nutrients(double nitrogen, double phosphorus, double potassium, double pH, String createdAt) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            this.createdAt = LocalDateTime.parse(createdAt, formatter);
+            this.nitrogen = nitrogen;
+            this.phosphorus = phosphorus;
+            this.potassium = potassium;
+            this.pH = pH;
+        }
     }
 
-    double getAverageNitrogen() {
-        return count > 0 ? totalNitrogen / count : 0;
+    public double getNitrogen() {
+        return nitrogen;
     }
 
-    double getAveragePhosphorus() {
-        return count > 0 ? totalPhosphorus / count : 0;
+    public double getPhosphorus() {
+        return phosphorus;
     }
 
-    double getAveragePotassium() {
-        return count > 0 ? totalPotassium / count : 0;
+    public double getPotassium() {
+        return potassium;
     }
 
-    double getAveragepH() {
-        return count > 0 ? totalpH / count : 0;
+    public double getpH() {
+        return pH;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
