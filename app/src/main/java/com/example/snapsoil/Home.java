@@ -2,6 +2,7 @@ package com.example.snapsoil;
 
 import static android.content.ContentValues.TAG;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
@@ -83,10 +84,7 @@ public class Home extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private static final String TAG = "Home";
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-    private Map<String, Nutrients> weeklyDataMap = new HashMap<>();
-    private Map<String, Nutrients> monthlyDataMap = new HashMap<>();
-    private Map<Integer, Nutrients> yearDataMap = new HashMap<>();
+
 
     Button btnCam, btnUpload;
     TextView weeklyTab, monthlyTab, yearlyTab;
@@ -102,6 +100,7 @@ public class Home extends Fragment {
     DataAggregator dataAggregator = new DataAggregator();
     Map<Integer, Map<String, Double>> nutrientAveragesMap;
     List<String> xAxisLabels;
+    Dialog pbDialog;
 
     public Home() {
     }
@@ -185,14 +184,16 @@ public class Home extends Fragment {
         return view;
     }
     private  void fetchData(String label){
+        renderCircleProgressBar();
+
         String userId = auth.getUserId();
-        db.getHistory(userId, true, task -> {
+        db.getHistory(userId, task -> {
             if(task.isSuccessful()){
                 QuerySnapshot querySnapshot = task.getResult();
-
                 for(DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()){
                     storeData(documentSnapshot);
                 }
+                pbDialog.dismiss();
             }else{
                 Log.e(TAG, "fetchData: " + task.getException());
             }
@@ -263,10 +264,10 @@ public class Home extends Fragment {
             }
         }
 
-
 //      Setting up the data for the chart
         LineDataSet dataSet = new LineDataSet(entries, label);
         LineData lineData = new LineData(dataSet);
+        lineChart.setData(lineData);
         lineChart.setData(lineData);
 
 //      Setting the color of the chart
@@ -312,6 +313,54 @@ public class Home extends Fragment {
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
     }
+
+    private void renderCircleProgressBar(){
+        pbDialog = new Dialog(getContext());
+        pbDialog.setContentView(R.layout.progress_bar_dialog);
+        pbDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pbDialog.getWindow().setBackgroundDrawableResource(R.drawable.card);
+        pbDialog.setCancelable(false);
+        pbDialog.show();
+    }
+
+    private void passPredictionResult(Uri uri){
+        NetworkRequestManager requestManager = new NetworkRequestManager();
+        requestManager.requestPrediction(getContext(), uri, new PredictionRequestListenter() {
+            @Override
+            public void onRequestCompleted(HistoryData data) {
+                double n, p, k, pH;
+                n = data.getNitrogen();
+                p = data.getPhosphorus();
+                k = data.getPotassium();
+                pH = data.getpH();
+                addToHistory(data);
+
+                Intent intent = new Intent(getContext(), ResultPage.class);
+                intent.putExtra("n_pred", n);
+                intent.putExtra("p_pred", p);
+                intent.putExtra("k_pred", k);
+                intent.putExtra("pH_pred", pH);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRequestFailed(String errorMessage) {
+                Log.e(TAG, "passPredictionResult: " + errorMessage);
+            }
+        });
+    }
+
+    private void addToHistory(HistoryData data){
+        String id = auth.getUserId();
+        db.addHistory(data, id, task -> {
+            if(task.isSuccessful()){
+                Log.d(TAG, "addToHistory: Success");
+            }else{
+                Log.d(TAG, "addToHistory: " + task.getException().toString());
+            }
+        });
+    }
+
     private void dispatchTakePictureIntent() {
         Context context = getContext();
         if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -345,6 +394,8 @@ public class Home extends Fragment {
     }
 
     private void passImgUri(Uri uri){
+        renderCircleProgressBar();
+
         if (uri != null) {
             Log.d(TAG, "Uri: " + uri);
             requestManager = new NetworkRequestManager();
@@ -354,9 +405,8 @@ public class Home extends Fragment {
                     if(code.equals("201")){
                         displayDialog();
                     }else if(code.equals("202")){
-                        Intent intent = new Intent(getContext(), ViewingPage.class);
-                        intent.putExtra("imageUri", uri.toString());
-                        startActivity(intent);
+                        passPredictionResult(uri);
+                        pbDialog.dismiss();
                     }
                 }
                 @Override
@@ -370,6 +420,8 @@ public class Home extends Fragment {
     }
 
     private void displayDialog(){
+        renderCircleProgressBar();
+
         Window window = getActivity().getWindow();
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.alpha = 0.5f;
@@ -396,6 +448,7 @@ public class Home extends Fragment {
             layoutParams.alpha = 1.0f;
             window.setAttributes(layoutParams);
         });
+        pbDialog.dismiss();
         dialog.show();
     }
     private void setActiveTab(TextView activeTab, TextView... inactiveTabs) {
@@ -409,13 +462,6 @@ public class Home extends Fragment {
             tab.setTextColor(getThemeColor(tab.getContext(), R.attr.textColorPrimary));
         }
     }
-
-//    private void loadFragment(Fragment fragment) {
-//        FragmentManager fragmentManager = getChildFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.fragmentContainerView3, fragment);
-//        fragmentTransaction.commit();
-//    }
 
     private int getThemeColor(Context context, int attr) {
         TypedValue typedValue = new TypedValue();

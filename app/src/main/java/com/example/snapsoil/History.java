@@ -2,6 +2,7 @@ package com.example.snapsoil;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -12,13 +13,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,6 +36,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class History extends Fragment {
     private static final String PREFS_NAME = "myPrefs";
@@ -42,9 +51,9 @@ public class History extends Fragment {
     private HistoryAdapter historyAdapter;
     private FirebaseFirestoreHelper db;
     private FirebaseAuthHelper auth;
-    ImageButton imBtnSort;
+    ImageButton imBtnFilter;
     RecyclerView recyclerView;
-    ProgressBar pbHistory;
+    Dialog pbDialog;
 
     public History() {
     }
@@ -62,9 +71,8 @@ public class History extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        imBtnSort = view.findViewById(R.id.imBtnSort);
+        imBtnFilter = view.findViewById(R.id.imBtnFilter);
         recyclerView = view.findViewById(R.id.recycler_view);
-        pbHistory = view.findViewById(R.id.pbHistory);
 
         db = new FirebaseFirestoreHelper();
         auth = new FirebaseAuthHelper();
@@ -77,27 +85,100 @@ public class History extends Fragment {
         fetchUserHistory();
         isDesc = sharedPreferences.getBoolean("asc", true);
 
-        imBtnSort.setOnClickListener(v -> {
-            pbHistory.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-            toggleSortOrder();
-            fetchUserHistory();
+        imBtnFilter.setOnClickListener(v -> {
+            renderDateRangeDialog();
         });
 
         return view;
     }
-    private void toggleSortOrder() {
-        isDesc = !isDesc;
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("asc", isDesc);
-        editor.apply();
-        imBtnSort.setImageResource(isDesc ? R.drawable.sort_desc : R.drawable.sort_asc);
+
+    private void renderDateRangeDialog(){
+        final String datePattern = "^((\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$";
+        Pattern pattern = Pattern.compile(datePattern);
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.filter_date_dialog);
+        dialog.getWindow().setLayout(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.card);
+        dialog.setCancelable(true);
+
+        EditText etStartDate = dialog.findViewById(R.id.etStartDate);
+        EditText etEndDate = dialog.findViewById(R.id.etEndDate);
+        Button btnFilter = dialog.findViewById(R.id.btnFilter);
+        resetEditText(etStartDate);
+        resetEditText(etEndDate);
+        btnFilter.setOnClickListener(v -> {
+            String userId = auth.getUserId();
+
+            String strStartDate = etStartDate.getText().toString().trim();
+            String strEndDate = etEndDate.getText().toString().trim();
+            Matcher startDateMatcher = pattern.matcher(strStartDate);
+            Matcher endDateMatcher = pattern.matcher(strEndDate);
+            boolean isStartDateMatch = startDateMatcher.find();
+            boolean isEndDateMatch = endDateMatcher.find();
+
+//          Check if empty
+            if(strStartDate.isEmpty()){
+                etStartDate.setError("Please Enter Date");
+                etStartDate.requestFocus();
+                return;
+            }
+
+            if(strEndDate.isEmpty()){
+                etEndDate.setError("Please Enter Date");
+                etEndDate.requestFocus();
+                return;
+            }
+
+//          Check format
+            if(!isStartDateMatch){
+                etStartDate.requestFocus();
+                etStartDate.setError("Ex. 2024-01-01");
+            }else if(!isEndDateMatch){
+                etEndDate.requestFocus();
+                etEndDate.setError("Ex. 2024-01-01");
+            }else{
+                renderCircleProgressBar();
+                recyclerView.setVisibility(View.GONE);
+                dialog.dismiss();
+                Log.d(TAG, "Filtering...");
+                db.filterHistory(userId, strStartDate, strEndDate, task -> {
+                    Log.d(TAG, "Accessing Database...");
+                    if(task.isSuccessful()){
+                        Log.d(TAG, "Filter History Success!");
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if(querySnapshot != null){
+                            historyDataList.clear();
+                            for(DocumentSnapshot document : querySnapshot){
+                                addToHistory(document);
+                            }
+                            Log.d(TAG, "Documents added to the recyclerview");
+                        }
+                        Log.d(TAG, "Displaying the filtered history");
+                        pbDialog.dismiss();
+                        recyclerView.setVisibility(View.VISIBLE);
+                    }else{
+                        Log.d(TAG, "filterHistory: " + task.getException().toString());
+                    }
+                });
+            }
+        });
+        dialog.show();
     }
+
+    private void renderCircleProgressBar(){
+        pbDialog = new Dialog(getContext());
+        pbDialog.setContentView(R.layout.progress_bar_dialog);
+        pbDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        pbDialog.getWindow().setBackgroundDrawableResource(R.drawable.card);
+        pbDialog.setCancelable(false);
+        pbDialog.show();
+    }
+
     private void fetchUserHistory(){
-        boolean asc = sharedPreferences.getBoolean("asc", false);
+        renderCircleProgressBar();
         String userId = auth.getUserId();
-        Log.d(TAG, "USER id: " + userId);
-        db.getHistory(userId, asc, task -> {
+        Log.d(TAG, "User id: " + userId);
+        db.getHistory(userId, task -> {
             if(task.isSuccessful()){
                 Log.d(TAG, "fetchUserHistory: Successful");
                 QuerySnapshot querySnapshot = task.getResult();
@@ -128,12 +209,31 @@ public class History extends Fragment {
         pH = documentSnapshot.getDouble("pH");
         date = documentSnapshot.getString("createdAt");
         Log.d(TAG, "Date: " + date);
-        pbHistory.setVisibility(View.GONE);
 
         historyData = new HistoryData(nitrogen, phosphorus, potassium, pH, date);
         historyDataList.add(historyData);
 
-        pbHistory.setVisibility(View.GONE);
+        pbDialog.dismiss();
         recyclerView.setVisibility(View.VISIBLE);
     }
+
+    private void resetEditText(EditText et){
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                et.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
 }

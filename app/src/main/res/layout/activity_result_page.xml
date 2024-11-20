@@ -288,28 +288,4 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.95" />
 
-    <ImageView
-        android:id="@+id/imageView10"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginEnd="28dp"
-        android:background="@drawable/circle"
-        android:backgroundTint="#ADB5BD"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/guideline18"
-        app:layout_constraintEnd_toEndOf="@+id/btnDone"
-        app:layout_constraintStart_toStartOf="@+id/btnDone" />
-
-    <ImageView
-        android:id="@+id/imageView11"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginStart="28dp"
-        android:background="@drawable/circle"
-        android:backgroundTint="?attr/colorAccent"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="@+id/btnDone"
-        app:layout_constraintStart_toStartOf="@+id/btnDone"
-        app:layout_constraintTop_toTopOf="@+id/imageView10" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

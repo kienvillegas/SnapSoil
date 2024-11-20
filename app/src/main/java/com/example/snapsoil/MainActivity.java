@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNav = findViewById(R.id.bottomNav);
@@ -58,17 +57,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
-    private boolean isNightModeEnabled() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        return sharedPreferences.getBoolean("NightMode", false);
-    }
-    private void changeTheme(){
-        if (isNightModeEnabled()) {
-            setTheme(R.style.AppThemeDark);
-        } else {
-            setTheme(R.style.AppThemeLight);
-        }
     }
 
     @Override
