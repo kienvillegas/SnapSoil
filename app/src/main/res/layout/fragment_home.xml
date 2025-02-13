@@ -73,7 +73,7 @@
                         android:text="Camera"
                         android:textAllCaps="false"
                         android:textColor="?attr/colorOnPrimary"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         app:layout_constraintEnd_toStartOf="@+id/btnUpload"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
