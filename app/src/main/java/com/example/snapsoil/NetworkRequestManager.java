@@ -26,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 public class NetworkRequestManager {
-    private static final String URL = " http://192.168.0.103:5000";
+    private static final String URL = "http://192.168.51.248:5000";
 
     private OkHttpClient client;
     private Handler handler;
@@ -135,6 +135,7 @@ public class NetworkRequestManager {
             }
         });
     }
+
     private void handleDetectionResponse(String responseData, DetectionRequestListener listener){
         try{
             JSONObject json = new JSONObject(responseData);
@@ -156,11 +157,15 @@ public class NetworkRequestManager {
             String code = json.getString("errorCode");
             if(code.equals("203")){
                 double nPrediction, pPrediction, kPrediction, pHPrediction;
+                String crop;
+
                 nPrediction = json.getDouble("n");
                 pPrediction = json.getDouble("p");
                 kPrediction = json.getDouble("k");
                 pHPrediction = json.getDouble("pH");
-                historyData = new HistoryData(nPrediction, pPrediction, kPrediction, pHPrediction);
+                crop = json.getString("crop");
+
+                historyData = new HistoryData(nPrediction, pPrediction, kPrediction, pHPrediction, crop);
                 handler.post(() -> {
                    listener.onRequestCompleted(historyData);
                 });
@@ -173,20 +178,4 @@ public class NetworkRequestManager {
             Log.e(TAG, "handleResponse: " + e.getMessage());
         }
     }
-
-//    private void handleResponse(String responseData, DetectionRequestListener listener) {
-//        try {
-//           JSONObject json = new JSONObject(responseData);
-//           String code = json.getString("errorCode");
-//           if(code.equals("201")){
-//               handleDetectionResponse(responseData, listener);
-//           }else if(code.equals("203")){
-//               handlePredictionResponse(responseData, listener);
-//           }else{
-//               Log.d(TAG, "handleResponse: " + code);
-//           }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

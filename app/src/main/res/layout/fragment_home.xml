@@ -52,7 +52,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:text="Select Method"
+                        android:text="Pumili ng Paraan        "
                         android:textColor="?attr/textColorPrimary"
                         android:textSize="24sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
                         android:fontFamily="@font/poppins"
                         android:paddingTop="20dp"
                         android:paddingBottom="20dp"
-                        android:text="Camera"
+                        android:text="Kamera"
                         android:textAllCaps="false"
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="20dp"
@@ -89,7 +89,7 @@
                         android:fontFamily="@font/poppins"
                         android:paddingTop="20dp"
                         android:paddingBottom="20dp"
-                        android:text="Upload"
+                        android:text="Mag-upload"
                         android:textAllCaps="false"
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="20sp"
@@ -145,7 +145,7 @@
                             android:fontFamily="@font/poppins"
                             android:gravity="center"
                             android:padding="10dp"
-                            android:text="Weekly"
+                            android:text="Lingguhan"
                             android:textColor="?attr/colorAccent"
                             android:textSize="16sp" />
 
@@ -157,7 +157,7 @@
                             android:fontFamily="@font/poppins"
                             android:gravity="center"
                             android:padding="10dp"
-                            android:text="Monthly"
+                            android:text="Buwanan"
                             android:textColor="?attr/textColorPrimary"
                             android:textSize="16sp" />
 
@@ -169,7 +169,7 @@
                             android:fontFamily="@font/poppins"
                             android:gravity="center"
                             android:padding="10dp"
-                            android:text="Yearly"
+                            android:text="Taunan"
                             android:textColor="?attr/textColorPrimary"
                             android:textSize="16sp" />
                     </LinearLayout>

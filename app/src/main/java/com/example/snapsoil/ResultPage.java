@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,11 +35,11 @@ public class ResultPage extends AppCompatActivity {
     private static FirebaseAuthHelper firebaseAuthHelper;
     Button btnDone;
     DecimalFormat df = new DecimalFormat("0.00");
-    TextView tvN, tvP, tvK, tvpH;
+    TextView tvN, tvP, tvK, tvpH, tvCrop;
+    ImageView imCrop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_page);
         btnDone = findViewById(R.id.btnDone);
@@ -46,6 +47,8 @@ public class ResultPage extends AppCompatActivity {
         tvP = findViewById(R.id.tvP);
         tvK = findViewById(R.id.tvK);
         tvpH = findViewById(R.id.tvpH);
+        tvCrop = findViewById(R.id.tvCrop);
+        imCrop = findViewById(R.id.imCrop);
 
         firebaseAuthHelper = new FirebaseAuthHelper();
         displayValues();
@@ -61,34 +64,123 @@ public class ResultPage extends AppCompatActivity {
         if (getIntent().hasExtra("n_pred") &&
                 getIntent().hasExtra("p_pred") &&
                 getIntent().hasExtra("k_pred") &&
-                getIntent().hasExtra("pH_pred")
+                getIntent().hasExtra("pH_pred") &&
+                getIntent().hasExtra("crop")
         ) {
             double n = getIntent().getDoubleExtra("n_pred", 0);
             double p = getIntent().getDoubleExtra("p_pred", 0);
             double k = getIntent().getDoubleExtra("k_pred", 0);
             double pH = getIntent().getDoubleExtra("pH_pred", 0);
+            String crop = getIntent().getStringExtra("crop");
+            int cropImg;
+
+
+
+            switch (crop){
+                case "rice":
+                    cropImg = R.drawable.rice;
+                    break;
+                case "maize":
+                    cropImg = R.drawable.corn;
+                    break;
+
+                case "chickpea":
+                    cropImg = R.drawable.chick_pea;
+                    break;
+
+                case "kidneybeans":
+                    cropImg = R.drawable.kidney_beans;
+                    break;
+
+                case "pigeonpeas":
+                    cropImg = R.drawable.pigeon_peas;
+                    break;
+
+                case "mothbeans":
+                    cropImg = R.drawable.moth_beans;
+                    break;
+
+                case "mungbean":
+                    cropImg = R.drawable.mung_beans;
+                    break;
+
+                case "blackgram":
+                    cropImg = R.drawable.blackgram;
+                    break;
+
+                case "lentil":
+                    cropImg = R.drawable.lentils;
+                    break;
+
+                case "pomegranate":
+                    cropImg = R.drawable.pomegranate;
+                    break;
+
+                case "banana":
+                    cropImg = R.drawable.banana;
+                    break;
+
+                case "mango":
+                    cropImg = R.drawable.mango;
+                    break;
+
+                case "grape":
+                    cropImg = R.drawable.grapes;
+                    break;
+
+                case "watermelon":
+                    cropImg = R.drawable.watermelon;
+                    break;
+
+                case "muskmelon":
+                    cropImg = R.drawable.muskmelon;
+                    break;
+
+                case "apple":
+                    cropImg = R.drawable.apple;
+                    break;
+
+                case "orange":
+                    cropImg = R.drawable.orange;
+                    break;
+
+                case "papaya":
+                    cropImg = R.drawable.papaya;
+                    break;
+
+                case "coconut":
+                    cropImg = R.drawable.coconut;
+                    break;
+
+                case "cotton":
+                    cropImg = R.drawable.cotton;
+                    break;
+
+                case "jute":
+                    cropImg = R.drawable.jute;
+                    break;
+
+                case "coffee":
+                    cropImg = R.drawable.coffee;
+                    break;
+
+                default:
+                    cropImg = R.drawable.orange;
+                    Log.d(TAG, "displayValues: " + cropImg);
+            }
 
             tvN.setText(df.format(n));
             tvP.setText(df.format(p));
             tvK.setText(df.format(k));
             tvpH.setText(df.format(pH));
+            tvCrop.setText(crop);
+            imCrop.setImageResource(cropImg);
         } else {
             Toast.makeText(this, "Values are not found", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
-    private boolean isNightModeEnabled() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        return sharedPreferences.getBoolean("NightMode", false);
-    }
-    private void changeTheme(){
-        if (isNightModeEnabled()) {
-            setTheme(R.style.AppThemeDark);
-        } else {
-            setTheme(R.style.AppThemeLight);
-        }
-    }
     @Override
     protected void onStart() {
         super.onStart();

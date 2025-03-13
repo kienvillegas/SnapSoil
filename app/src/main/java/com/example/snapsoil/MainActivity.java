@@ -54,6 +54,13 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.fragmentContainerView, newFragment);
                 fragmentTransaction.commit();
                 return true;
+            }else if(item.getItemId() == R.id.nav_info){
+                Fragment newFragment = new Info();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView, newFragment);
+                fragmentTransaction.commit();
+                return true;
             }
             return false;
         });

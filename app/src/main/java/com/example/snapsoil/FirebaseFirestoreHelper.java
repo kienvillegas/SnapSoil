@@ -36,6 +36,7 @@ public class FirebaseFirestoreHelper {
         historyData.put("phosphorus", history.getPhosphorus());
         historyData.put("potassium", history.getPotassium());
         historyData.put("pH", history.getpH());
+        historyData.put("crop", history.getCrop());
         historyData.put("createdAt", history.getCreatedAt());
 
         DocumentReference historyRef = db.collection("history")

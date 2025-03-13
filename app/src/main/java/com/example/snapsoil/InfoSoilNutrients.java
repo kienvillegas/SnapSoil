@@ -1,18 +1,21 @@
 package com.example.snapsoil;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class InfoSoilNutrients extends AppCompatActivity {
+
+    ImageView imgBtnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_info_soil_nutrients);
 
+        imgBtnBack = findViewById(R.id.back);
+        imgBtnBack.setOnClickListener(v -> finish());
     }
 }

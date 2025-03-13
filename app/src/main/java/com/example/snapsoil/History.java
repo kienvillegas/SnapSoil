@@ -118,13 +118,13 @@ public class History extends Fragment {
 
 //          Check if empty
             if(strStartDate.isEmpty()){
-                etStartDate.setError("Please Enter Date");
+                etStartDate.setError("Pakilagay ang Petsa");
                 etStartDate.requestFocus();
                 return;
             }
 
             if(strEndDate.isEmpty()){
-                etEndDate.setError("Please Enter Date");
+                etEndDate.setError("Pakilagay ang Petsa");
                 etEndDate.requestFocus();
                 return;
             }
@@ -146,12 +146,16 @@ public class History extends Fragment {
                     if(task.isSuccessful()){
                         Log.d(TAG, "Filter History Success!");
                         QuerySnapshot querySnapshot = task.getResult();
-                        if(querySnapshot != null){
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            Log.d(TAG, "Querysnapshot is not null and contains data");
+
                             historyDataList.clear();
-                            for(DocumentSnapshot document : querySnapshot){
+                            for (DocumentSnapshot document : querySnapshot) {
+                                Log.d(TAG, "Document: " + document);
                                 addToHistory(document);
                             }
-                            Log.d(TAG, "Documents added to the recyclerview");
+                        } else {
+                            Log.d(TAG, "No documents found for the given date range.");
                         }
                         Log.d(TAG, "Displaying the filtered history");
                         pbDialog.dismiss();
@@ -202,19 +206,22 @@ public class History extends Fragment {
         Log.d(TAG, "addToHistory: History added to recyclerview");
 
         double nitrogen, phosphorus, potassium, pH;
-        String date;
+        String date, crop;
         nitrogen = documentSnapshot.getDouble("nitrogen");
         phosphorus = documentSnapshot.getDouble("phosphorus");
         potassium = documentSnapshot.getDouble("potassium");
         pH = documentSnapshot.getDouble("pH");
         date = documentSnapshot.getString("createdAt");
+        crop = documentSnapshot.getString("crop");
         Log.d(TAG, "Date: " + date);
 
-        historyData = new HistoryData(nitrogen, phosphorus, potassium, pH, date);
+        historyData = new HistoryData(nitrogen, phosphorus, potassium, pH,crop, date);
         historyDataList.add(historyData);
 
         pbDialog.dismiss();
         recyclerView.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Documents added to the recyclerview");
+
     }
 
     private void resetEditText(EditText et){

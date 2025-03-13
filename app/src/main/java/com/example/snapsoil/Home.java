@@ -245,7 +245,25 @@ public class Home extends Fragment {
     private void displayChart(Map<Integer, Map<String, Double>> averages, LineChart lineChart, String label, List<String> xAxisLabels) {
         ArrayList<Entry> entries = new ArrayList<>();
         int index = 0;
+        int nutrientColor;
 
+        switch (label.toLowerCase()) {
+            case "nitrogen":
+                nutrientColor = Color.parseColor("#2196F3");
+                break;
+            case "phosphorus":
+                nutrientColor = Color.parseColor("#FF9800");
+                break;
+            case "potassium":
+                nutrientColor = Color.parseColor("#9C27B0");
+                break;
+            case "ph":
+                nutrientColor = Color.parseColor("#4CAF50");
+                break;
+            default:
+                nutrientColor = Color.GRAY;
+                break;
+        }
         for (Integer key : averages.keySet()) {
             Map<String, Double> nutrient = averages.get(key);
             if (nutrient != null) {
@@ -264,6 +282,8 @@ public class Home extends Fragment {
             }
         }
 
+
+
 //      Setting up the data for the chart
         LineDataSet dataSet = new LineDataSet(entries, label);
         LineData lineData = new LineData(dataSet);
@@ -271,7 +291,7 @@ public class Home extends Fragment {
         lineChart.setData(lineData);
 
 //      Setting the color of the chart
-        dataSet.setColor(Color.BLUE);
+        dataSet.setColor(nutrientColor);
         dataSet.setValueTextColor(Color.BLACK);
         dataSet.setDrawValues(false);
 
@@ -324,15 +344,21 @@ public class Home extends Fragment {
     }
 
     private void passPredictionResult(Uri uri){
+        renderCircleProgressBar();
+
         NetworkRequestManager requestManager = new NetworkRequestManager();
         requestManager.requestPrediction(getContext(), uri, new PredictionRequestListenter() {
             @Override
             public void onRequestCompleted(HistoryData data) {
                 double n, p, k, pH;
+                String crop;
                 n = data.getNitrogen();
                 p = data.getPhosphorus();
                 k = data.getPotassium();
                 pH = data.getpH();
+                crop = data.getCrop();
+
+
                 addToHistory(data);
 
                 Intent intent = new Intent(getContext(), ResultPage.class);
@@ -340,6 +366,9 @@ public class Home extends Fragment {
                 intent.putExtra("p_pred", p);
                 intent.putExtra("k_pred", k);
                 intent.putExtra("pH_pred", pH);
+                intent.putExtra("crop", crop);
+
+                pbDialog.dismiss();
                 startActivity(intent);
             }
 
@@ -351,6 +380,7 @@ public class Home extends Fragment {
     }
 
     private void addToHistory(HistoryData data){
+        Log.d(TAG, "addToHistory: Adding to history");
         String id = auth.getUserId();
         db.addHistory(data, id, task -> {
             if(task.isSuccessful()){
@@ -406,15 +436,18 @@ public class Home extends Fragment {
                         displayDialog();
                     }else if(code.equals("202")){
                         passPredictionResult(uri);
-                        pbDialog.dismiss();
+//                        pbDialog.dismiss();
                     }
                 }
                 @Override
                 public void onRequestFailed(String errorMessage) {
                     Log.e(TAG, "passImageUri: " + errorMessage);
+                    pbDialog.dismiss();
                 }
             });
+//            pbDialog.dismiss();
         } else {
+            pbDialog.dismiss();
             Toast.makeText(getContext(), "Selected image URI is null", Toast.LENGTH_SHORT).show();
         }
     }
