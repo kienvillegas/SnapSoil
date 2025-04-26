@@ -244,6 +244,15 @@ public class Home extends Fragment {
 
     private void displayChart(Map<Integer, Map<String, Double>> averages, LineChart lineChart, String label, List<String> xAxisLabels) {
         ArrayList<Entry> entries = new ArrayList<>();
+
+        if (averages == null || averages.isEmpty()) {
+            Log.d(TAG, "No data available to display.");
+            lineChart.clear(); // Clear previous chart data
+            lineChart.setNoDataText("No Data Available.");
+            lineChart.invalidate();
+            return;
+        }
+
         int index = 0;
         int nutrientColor;
 
@@ -445,7 +454,7 @@ public class Home extends Fragment {
                     pbDialog.dismiss();
                 }
             });
-//            pbDialog.dismiss();
+            pbDialog.dismiss();
         } else {
             pbDialog.dismiss();
             Toast.makeText(getContext(), "Selected image URI is null", Toast.LENGTH_SHORT).show();

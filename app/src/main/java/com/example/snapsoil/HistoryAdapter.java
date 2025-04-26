@@ -59,14 +59,62 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         date = historyData.getCreatedAt();
         crop = historyData.getCrop();
 
+        String nMeaning = "";
+        String pMeaning = "";
+        String kMeaning = "";
+        String pHMeaning = "";
+
+        nMeaning = evalNitrogen(nitrogen);
+        pMeaning = evalPhosphorus(phosphorus);
+        kMeaning = evalPotassium(potassium);
+        pHMeaning = evalpH(pH);
+
         Log.d(TAG, "onBindViewHolder: Crop = " + crop);
 
-        holder.tvResultNitrogen.setText(df.format(nitrogen));
-        holder.tvResultPhosphorus.setText(df.format(phosphorus));
-        holder.tvResultPotassium.setText(df.format(potassium));
-        holder.tvResultpH.setText(df.format(pH));
+        holder.tvResultNitrogen.setText(df.format(nitrogen) + " (" + nMeaning + ")");
+        holder.tvResultPhosphorus.setText(df.format(phosphorus) + " (" + pMeaning + ")");
+        holder.tvResultPotassium.setText(df.format(potassium) + " (" + kMeaning + ")");
+        holder.tvResultpH.setText(df.format(pH) + " (" + pHMeaning + ")");
         holder.tvDate.setText("Petsa: " + date);
         holder.tvResultCrop.setText(crop);
+    }
+
+    public static String evalNitrogen(Double n){
+        if(n <= 30){
+            return "Low";
+        }else if(n > 30 && n <= 150){
+            return "Medium";
+        }else if(n > 150 && n <= 500) {
+            return "High";
+        } else return "";
+    }
+
+    public static String evalPhosphorus(Double p){
+        if(p <= 40){
+            return "Low";
+        }else if(p > 40 && p <= 100){
+            return "Medium";
+        }else if(p > 100 && p <= 240){
+            return "High";
+        }else return "";
+    }
+    public static String evalPotassium(Double k){
+        if(k <= 40){
+            return "Low";
+        }else if(k > 40 && k <= 100){
+            return "Medium";
+        }else if(k > 100 && k <= 240){
+            return "High";
+        }else return "";
+    }
+    public static String evalpH(Double pH){
+        if(pH >= 4.0 && pH <= 5.5){
+            return "Low";
+        }else if(pH > 5.5 && pH <= 7.5){
+            return "Medium";
+        }else if(pH > 7.5 && pH <= 10.0){
+            return "High";
+        }else return "";
     }
     @Override
     public int getItemCount() {

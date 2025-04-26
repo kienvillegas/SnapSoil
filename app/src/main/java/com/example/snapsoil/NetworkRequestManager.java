@@ -26,7 +26,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 public class NetworkRequestManager {
-    private static final String URL = "http://192.168.51.248:5000";
+//    192.168.79.248:5000
+
+    private static final String URL = "http://192.168.0.103:5000";
 
     private OkHttpClient client;
     private Handler handler;

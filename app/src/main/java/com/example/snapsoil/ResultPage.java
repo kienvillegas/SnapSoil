@@ -169,16 +169,65 @@ public class ResultPage extends AppCompatActivity {
                     Log.d(TAG, "displayValues: " + cropImg);
             }
 
-            tvN.setText(df.format(n));
-            tvP.setText(df.format(p));
-            tvK.setText(df.format(k));
-            tvpH.setText(df.format(pH));
+            String nMeaning = "";
+            String pMeaning = "";
+            String kMeaning = "";
+            String pHMeaning = "";
+
+            nMeaning = evalNitrogen(n);
+            pMeaning = evalPhosphorus(p);
+            kMeaning = evalPotassium(k);
+            pHMeaning = evalpH(pH);
+
+            tvN.setText(df.format(n) + " (" + nMeaning + ")");
+            tvP.setText(df.format(p) + " (" + pMeaning + ")");
+            tvK.setText(df.format(k) + " (" + kMeaning + ")");
+            tvpH.setText(df.format(pH) + " (" + pHMeaning + ")");
+
             tvCrop.setText(crop);
             imCrop.setImageResource(cropImg);
         } else {
             Toast.makeText(this, "Values are not found", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    public static String evalNitrogen(Double n){
+        if(n <= 30){
+            return "Low";
+        }else if(n > 30 && n <= 150){
+            return "Medium";
+        }else if(n > 150 && n <= 500) {
+            return "High";
+        } else return "";
+    }
+
+    public static String evalPhosphorus(Double p){
+        if(p <= 40){
+            return "Low";
+        }else if(p > 40 && p <= 100){
+            return "Medium";
+        }else if(p > 100 && p <= 240){
+            return "High";
+        }else return "";
+    }
+    public static String evalPotassium(Double k){
+        if(k <= 40){
+            return "Low";
+        }else if(k > 40 && k <= 100){
+            return "Medium";
+        }else if(k > 100 && k <= 240){
+            return "High";
+        }else return "";
+    }
+    public static String evalpH(Double pH){
+        if(pH >= 4.0 && pH <= 5.5){
+            return "Low";
+        }else if(pH > 5.5 && pH <= 7.5){
+            return "Medium";
+        }else if(pH > 7.5 && pH <= 10.0){
+            return "High";
+        }else return "";
     }
 
     @Override
